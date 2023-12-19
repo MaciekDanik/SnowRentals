@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ item.}}{% endblock %}
+
+{% block content %}
+<div style="text-align:center; width:50%; margin: 0 auto">
+    <h2 class="p-4 text-3xl text-white bg-teal-500 rounded-t-xl"><strong>{{item.klient}}</strong></h2>
+    <ul class="mb-4 p-4 text-xl bg-gray-300 rounded-b-xl">
+        <li><strong>Pracownik</strong>: {{ item.pracownik }}</li>
+        <li><strong>Od</strong>: {{ item.od}}</li>
+        <li><strong>Do</strong>: {{ item.do}}</li>
+    </ul>
+
+    <a href="#" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Edytuj</a>
+    <a href="{% url 'item:nowyPakiet' %}" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Dobierz sprzęt</a>
+</div>
+{% endblock %}

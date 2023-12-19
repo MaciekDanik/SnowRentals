@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Klient{% endblock %}
+
+{% block content %}
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <h2 class="mb-12 text-2xl text-center">Lista klientów</h2>
+
+    <div class="grid grid-cols-3 gap-3">
+        {% for item in  items%}
+        <div>
+            <a href="{% url 'item:klient_szczegol' item.id %}">
+                <div class="p-4 bg-white rounded-xl">
+                    <h2 class="text-xl">{{ item.imie}} {{ item.nazwisko }}</h2>
+                    <p class="text-gray-500">PESEL: {{item.PESEL}}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

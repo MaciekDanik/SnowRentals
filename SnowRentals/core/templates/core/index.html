@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Witaj{% endblock %}
+
+{% block content %}
+    <h1 class="w-1/4 mb-6 py-4 px-4 text-3xl font-semibold bg-teal-500 text-white rounded-xl">Strona główna</h1>
+    {% if request.user.is_authenticated %}
+        <h1 class="text-xl font-semibold">Zostałeś pomyślnie zalogowany! </h1>
+    {% else %}
+        <h1 class="text-xl font-semibold">Zaloguj się aby cokolwiek osiągnąć! </h1>
+    {% endif %}
+
+{% endblock %}

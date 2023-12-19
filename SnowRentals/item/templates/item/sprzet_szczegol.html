@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ item.rodzaj}}{% endblock %}
+
+{% block content %}
+<div style="text-align:center; width:50%; margin: 0 auto">
+    <h2 class="p-4 text-3xl text-white bg-teal-500 rounded-t-xl"><strong>{{item.rodzaj}}</strong></h2>
+    <ul class="mb-4 p-4 text-xl bg-gray-300 rounded-b-xl">
+        <li><strong>Marka</strong>: {{ item.marka}}</li>
+        <li><strong>Długość / rozmiar</strong>: {{ item.dlugosc}}</li>
+        <li><strong>Stan</strong>: {{ item.stan}}</li>
+        <li><strong>Cena</strong>: {{ item.cena}}</li>
+    </ul>
+
+    <a href="#" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Edytuj</a>
+</div>
+{% endblock %}
