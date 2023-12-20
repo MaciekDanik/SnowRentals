@@ -1,6 +1,7 @@
 import numpy as np
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
 from .models import Sprzet, Klient, Wypozyczenie, Pracownik
 from .forms import NowySprzetForm, NowyKlientForm, NoweWypozyczenieForm, NowyPakietForm
@@ -63,6 +64,32 @@ def nowySprzet(request):
     })
 
 @login_required()
+@transaction.atomic()
+def noweWypozyczenie(request):
+    if request.method == 'POST':
+        form = NoweWypozyczenieForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.pracownik = request.user
+            item.save()
+            #transaction.commit()
+
+            return redirect('item:wypozyczenie_szczegol', pk=item.id)
+        #nowyPakiet(request, item.id):
+        #     get item from TABLE id=id
+        #     form for Sprzet
+        #     pakiet -> wypo_id = item.id
+
+    form = NoweWypozyczenieForm()
+
+    return render(request, 'item/form.html',{
+        'form': form,
+        'title': 'Nowe wypożyczenie',
+    })
+
+
+@login_required()
 def nowyKlient(request):
     if request.method == 'POST':
         form = NowyKlientForm(request.POST)
@@ -78,29 +105,6 @@ def nowyKlient(request):
     return render(request, 'item/form.html',{
         'form': form,
         'title': 'Nowy klient',
-    })
-
-@login_required()
-def noweWypozyczenie(request):
-    if request.method == 'POST':
-        form = NoweWypozyczenieForm(request.POST)
-
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.pracownik = request.user
-            item.save()
-
-            return redirect('item:wypozyczenie_szczegol', pk=item.id)
-        #nowyPakiet(request, item.id):
-        #     get item from TABLE id=id
-        #     form for Sprzet
-        #     pakiet -> wypo_id = item.id
-
-    form = NoweWypozyczenieForm()
-
-    return render(request, 'item/form.html',{
-        'form': form,
-        'title': 'Nowe wypożyczenie',
     })
 
 @login_required()
