@@ -3,8 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 
-from .models import Sprzet, Klient, Wypozyczenie, Pracownik
-from .forms import NowySprzetForm, NowyKlientForm, NoweWypozyczenieForm, NowyPakietForm
+from .models import Sprzet, Klient, Wypozyczenie, Pakiet
+from .forms import NowySprzetForm, NowyKlientForm, NoweWypozyczenieForm, NowyPakietForm, EdytujKlientForm, EdytujWypozyczenieForm, EdytujSprzetForm
 
 def sprzet_szczegol(request, pk):  #szczegóły sprzętu
     item = get_object_or_404(Sprzet, pk=pk)
@@ -31,9 +31,11 @@ def klient_szczegol(request, pk):  #szczegóły klientów
 
 def wypozyczenie_szczegol(request, pk):  #szczegóły wypozyczenia
     item = get_object_or_404(Wypozyczenie, pk=pk)
+    pakiet = Pakiet.objects.filter(wypozyczenie=item.pk)
 
     return render(request, 'item/wypozyczenie_szczegol.html',{
-        'item': item
+        'item': item,
+        'pakiet': pakiet
     })
 
 def pracownik_szczegol(request, pk):  #szczegóły sprzętu
@@ -64,6 +66,25 @@ def nowySprzet(request):
     })
 
 @login_required()
+def edytuj_sprzet(request, pk):
+    item = get_object_or_404(Sprzet, pk=pk)
+
+    if request.method == 'POST':
+        form=EdytujSprzetForm(request.POST, instance=item)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect('item:sprzet_szczegol', pk=item.id)
+
+    form = EdytujSprzetForm(instance=item)
+
+    return render(request, 'item/form.html',{
+        'form': form,
+        'title': 'Edytuj sprzęt',
+    })
+
+@login_required()
 @transaction.atomic()
 def noweWypozyczenie(request):
     if request.method == 'POST':
@@ -73,7 +94,6 @@ def noweWypozyczenie(request):
             item = form.save(commit=False)
             item.pracownik = request.user
             item.save()
-            #transaction.commit()
 
             return redirect('item:wypozyczenie_szczegol', pk=item.id)
         #nowyPakiet(request, item.id):
@@ -88,6 +108,28 @@ def noweWypozyczenie(request):
         'title': 'Nowe wypożyczenie',
     })
 
+@login_required()
+def edytuj_wypozyczenie(request, pk):
+
+    item = get_object_or_404(Wypozyczenie, pk=pk)
+    if request.method == 'POST':
+        form = EdytujWypozyczenieForm(request.POST, instance=item)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect('item:wypozyczenie_szczegol', pk=item.id)
+        #nowyPakiet(request, item.id):
+        #     get item from TABLE id=id
+        #     form for Sprzet
+        #     pakiet -> wypo_id = item.id
+
+    form = EdytujWypozyczenieForm(instance=item)
+
+    return render(request, 'item/form.html',{
+        'form': form,
+        'title': 'Edytuj wypożyczenie',
+    })
 
 @login_required()
 def nowyKlient(request):
@@ -108,13 +150,35 @@ def nowyKlient(request):
     })
 
 @login_required()
-def nowyPakiet(request):
+def edytuj_klient(request, pk):
+    item = get_object_or_404(Klient, pk=pk)
+
+    if request.method == 'POST':
+        form = EdytujKlientForm(request.POST, instance=item)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect('item:klient_szczegol', pk=item.id)
+
+    form = EdytujKlientForm(instance=item)
+
+    return render(request, 'item/form.html',{
+        'form': form,
+        'title': 'Edytuj klient',
+    })
+
+@login_required()
+@transaction.atomic()
+def nowyPakiet(request, pk):
     if request.method == 'POST':
         form = NowyPakietForm(request.POST)
 
         if form.is_valid():
             item = form.save(commit=False)
             klucz = item.wypozyczenie.id
+            item.wypozyczenie = get_object_or_404(Wypozyczenie,klucz)#pk=pk)
+
             item.save()
 
             return redirect('item:wypozyczenie_szczegol', pk=klucz)
@@ -125,3 +189,10 @@ def nowyPakiet(request):
         'form': form,
         'title': 'Pakiet',
     })
+
+@login_required
+def delete(request, pk):
+    item = get_object_or_404(Sprzet, pk=pk)
+    item.delete()
+
+    return redirect('core:index')

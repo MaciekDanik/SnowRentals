@@ -15,6 +15,25 @@ def Isbool(wartosc):
             _("%(wartosc)s jest nieprawidlowa"),
             params = {"wartosc": wartosc},)
 
+def PESEL_validation(wartosc):
+    if (len(wartosc) != 11):
+        raise ValidationError(
+            _("%(wartosc)s ma nie odpowiednią długość, spróbuj ponownie."),
+            params={"wartosc": wartosc}, )
+
+def TEL_validation(wartosc):
+    if (len(wartosc) != 9):
+        raise ValidationError(
+            _("%(wartosc)s ma nie odpowiednią długość, spróbuj ponownie."),
+            params={"wartosc": wartosc}, )
+
+def KOD_validation(wartosc):
+    if (len(wartosc) != 6):
+        raise ValidationError(
+            _("%(wartosc)s ma nie odpowiednią długość, spróbuj ponownie."),
+            params={"wartosc": wartosc}, )
+
+
 class Pracownik(models.Model):
     imie = models.CharField(max_length=40)
     nazwisko = models.CharField(max_length=40)
@@ -26,14 +45,25 @@ class Pracownik(models.Model):
     def __str__(self):
         return self.imie + " " + self.nazwisko
 
+class BOOL(models.Model):
+    TYPE = models.CharField(max_length=3)
+
+    class Meta:
+        ordering=('TYPE',)
+        verbose_name_plural = 'Typy'
+
+    def __str__(self):
+        return self.TYPE
+
+
 class Klient(models.Model):
     imie = models.CharField(max_length=40)
     nazwisko = models.CharField(max_length=40)
-    PESEL = models.CharField(max_length=11, unique=True)
+    PESEL = models.CharField(max_length=11, unique=True, validators=[PESEL_validation])
     miasto = models.CharField(max_length=50, null=False, default="---")
     ulica_nrDomu = models.CharField(max_length=50, null=False, default="---")
-    kod_pocztowy = models.CharField(max_length=6)
-    nr_telefonu = models.CharField(max_length=9, unique=True)
+    kod_pocztowy = models.CharField(max_length=6, validators=[KOD_validation])
+    nr_telefonu = models.CharField(max_length=9, unique=True, validators=[TEL_validation])
 
     class Meta:
         ordering=('imie',)
@@ -54,12 +84,12 @@ class Utarg(models.Model):
     #     return "Utarg z: " + str(self.data)
 
 class Wypozyczenie(models.Model):
-    pracownik = models.ForeignKey(User, related_name='items', null=True, on_delete=models.SET_NULL)
-    klient = models.ForeignKey(Klient, null=True, on_delete=models.SET_NULL)
+    pracownik = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    klient = models.ForeignKey(Klient, related_name='items', null=True, on_delete=models.SET_NULL)
     od = models.DateTimeField("Wypozyczone: ") #, auto_now_add=True
     do = models.DateTimeField("Zwrocone: ")
     #zaplacone = models.IntegerField(validators=[Isbool], default=0)
-    zaplacone = models.BooleanField(default=False)
+    zaplacone = models.ForeignKey(BOOL, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name_plural = 'Wypożyczenia'

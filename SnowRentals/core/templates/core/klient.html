@@ -12,6 +12,7 @@
             <a href="{% url 'item:klient_szczegol' item.id %}">
                 <div class="p-4 bg-white rounded-xl">
                     <h2 class="text-xl">{{ item.imie}} {{ item.nazwisko }}</h2>
+                    <p class="text-gray-500">Nr telefonu: {{item.nr_telefonu}}</p>
                     <p class="text-gray-500">PESEL: {{item.PESEL}}</p>
                 </div>
             </a>
