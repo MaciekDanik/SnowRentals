@@ -88,7 +88,6 @@ class Wypozyczenie(models.Model):
     klient = models.ForeignKey(Klient, related_name='items', null=True, on_delete=models.SET_NULL)
     od = models.DateTimeField("Wypozyczone: ") #, auto_now_add=True
     do = models.DateTimeField("Zwrocone: ")
-    #zaplacone = models.IntegerField(validators=[Isbool], default=0)
     zaplacone = models.ForeignKey(BOOL, null=True, on_delete=models.SET_NULL)
 
     class Meta:
@@ -125,7 +124,7 @@ class Sprzet(models.Model):
     marka = models.CharField(max_length=40)
     stan = models.ForeignKey(Stan, on_delete=models.CASCADE)
     cena = models.IntegerField(validators=[wiekszeOdZera], default=30)
-    #is_rented = models.BooleanField(default=False)
+    wypozyczone = models.ForeignKey(BOOL, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ('rodzaj',)

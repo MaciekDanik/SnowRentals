@@ -10,7 +10,7 @@ INPUT_CLASSES = 'w-1/6 py-3 px-4 rounded-xl border'
 class NowySprzetForm(forms.ModelForm):
     class Meta:
         model = Sprzet
-        fields = ('rodzaj', 'dlugosc', 'marka', 'stan', 'cena',)
+        fields = ('rodzaj', 'dlugosc', 'marka', 'stan', 'cena', 'wypozyczone',)
 
         widgets = {
             'rodzaj': forms.Select(attrs={
@@ -26,6 +26,9 @@ class NowySprzetForm(forms.ModelForm):
                 'class': INPUT_CLASSES
             }),
             'cena': forms.NumberInput(attrs={
+                'class': INPUT_CLASSES
+            }),
+            'wypozyczone': forms.Select(attrs={
                 'class': INPUT_CLASSES
             })
         }
@@ -128,28 +131,31 @@ class EdytujWypozyczenieForm(forms.ModelForm):
 class NowyPakietForm(forms.ModelForm):
     class Meta:
         model = Pakiet
-        fields = ('sprzet',)# 'wypozyczenie',)
+        fields = ('sprzet', 'wypozyczenie',)
 
         widgets = {
             'sprzet': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
-            # 'wypozyczenie': forms.Select(attrs={
-            #     'class': INPUT_CLASSES
-            # })
+            'wypozyczenie': forms.Select(attrs={
+                'class': INPUT_CLASSES
+            })
         }
 
 
 class EdytujSprzetForm(forms.ModelForm):
     class Meta:
         model = Sprzet
-        fields = ('stan', 'cena',)
+        fields = ('stan', 'cena', 'wypozyczone',)
 
         widgets = {
             'stan': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
             'cena': forms.NumberInput(attrs={
+                'class': INPUT_CLASSES
+            }),
+            'wypozyczone': forms.Select(attrs={
                 'class': INPUT_CLASSES
             })
         }

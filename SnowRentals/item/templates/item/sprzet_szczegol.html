@@ -10,6 +10,7 @@
         <li><strong>Długość / rozmiar</strong>: {{ item.dlugosc}}</li>
         <li><strong>Stan</strong>: {{ item.stan}}</li>
         <li><strong>Cena</strong>: {{ item.cena}}</li>
+        <li><strong>Wypożyczone</strong>: {{ item.wypozyczone}}</li>
     </ul>
 
     <a href="{% url 'item:edytuj_sprzet' item.id %}" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Edytuj</a>

@@ -9,11 +9,11 @@
             <li><strong>Pracownik</strong>: {{ item.pracownik }}</li>
             <li><strong>Od</strong>: {{ item.od}}</li>
             <li><strong>Do</strong>: {{ item.do}}</li>
-            <li><strong>Zapłacone</strong>: {{ item.zaplacone}}</li>
+            <li><strong>Zwrócone</strong>: {{ item.zaplacone }}</li>
         </ul>
 
         <a href="{% url 'item:edytuj_wypozyczenie' item.id %}" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Edytuj</a>
-        <a href="{% url 'item:nowyPakiet' item.id %}" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Dobierz sprzęt</a>
+        <a href="{% url 'item:nowyPakiet' %}" class="inline-block mt-4 px-4 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Dobierz sprzęt</a>
     </div>
 
     <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
@@ -22,7 +22,7 @@
             <div class="grid grid-cols-3 gap-3">
                 {% for item in pakiet %}
                 <div>
-                    <a href="{% url 'item:sprzet_szczegol' item.id %}">
+                    <a href="{% url 'item:sprzet_szczegol' item.sprzet.id %}">
                         <div class="p-4 bg-white rounded-xl">
                             <h2 class="text-xl">{{ item.sprzet.rodzaj }}</h2>
                             <p class="text-gray-500">Długość: {{ item.sprzet.dlugosc }}</p>
