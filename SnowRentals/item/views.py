@@ -1,22 +1,18 @@
+import datetime
+
 import numpy as np
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 
-from .models import Sprzet, Klient, Wypozyczenie, Pakiet, BOOL
+from .models import Sprzet, Klient, Wypozyczenie, Pakiet, BOOL, Utarg
 from .forms import NowySprzetForm, NowyKlientForm, NoweWypozyczenieForm, NowyPakietForm, EdytujKlientForm, EdytujWypozyczenieForm, EdytujSprzetForm
+
+TAK = get_object_or_404(BOOL, pk=1)
+NIE = get_object_or_404(BOOL, pk=2)
 
 def sprzet_szczegol(request, pk):  #szczegóły sprzętu
     item = get_object_or_404(Sprzet, pk=pk)
-
-    if str(item.stan) == "Bardzo dobry":
-        item.cena = np.floor(item.cena * 1)
-    if str(item.stan) == "Dobry":
-        item.cena = np.floor(item.cena * 0.9)
-    elif str(item.stan) == "Jeszcze sprawny":
-        item.cena = np.floor(item.cena * 0.85)
-    elif str(item.stan) == "Nie sprawny":
-        item.cena = np.floor(item.cena * 0.7)
 
     return render(request, 'item/sprzet_szczegol.html',{
         'item': item
@@ -38,13 +34,6 @@ def wypozyczenie_szczegol(request, pk):  #szczegóły wypozyczenia
         'pakiet': pakiet
     })
 
-def pracownik_szczegol(request, pk):  #szczegóły sprzętu
-    pracownik = get_object_or_404(Klient, pk=pk)
-
-    return render(request, 'item/pracownik_szczegol.html',{
-        'pracownik': pracownik
-    })
-
 @login_required()
 def nowySprzet(request):
     if request.method == 'POST':
@@ -52,8 +41,14 @@ def nowySprzet(request):
 
         if form.is_valid():
             item = form.save(commit=False) #do wypożyczenia
-            #item.arg = request.user
-            #item.save()
+            if str(item.stan) == "Bardzo dobry":
+                item.cena = np.floor(item.cena * 1)
+            if str(item.stan) == "Dobry":
+                item.cena = np.floor(item.cena * 0.9)
+            elif str(item.stan) == "Jeszcze sprawny":
+                item.cena = np.floor(item.cena * 0.85)
+            elif str(item.stan) == "Nie sprawny":
+                item.cena = np.floor(item.cena * 0.7)
             item.save()
 
             return redirect('item:sprzet_szczegol', pk=item.id)
@@ -73,7 +68,16 @@ def edytuj_sprzet(request, pk):
         form=EdytujSprzetForm(request.POST, instance=item)
 
         if form.is_valid():
-            form.save()
+            item = form.save(commit=False)  # do wypożyczenia
+            if str(item.stan) == "Bardzo dobry":
+                item.cena = np.floor(item.cena * 1)
+            if str(item.stan) == "Dobry":
+                item.cena = np.floor(item.cena * 0.9)
+            elif str(item.stan) == "Jeszcze sprawny":
+                item.cena = np.floor(item.cena * 0.85)
+            elif str(item.stan) == "Nie sprawny":
+                item.cena = np.floor(item.cena * 0.7)
+            item.save()
 
             return redirect('item:sprzet_szczegol', pk=item.id)
 
@@ -92,14 +96,12 @@ def noweWypozyczenie(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.od = datetime.date.today()
             item.pracownik = request.user
+            item.zaplacone = NIE
             item.save()
 
             return redirect('item:wypozyczenie_szczegol', pk=item.id)
-        #nowyPakiet(request, item.id):
-        #     get item from TABLE id=id
-        #     form for Sprzet
-        #     pakiet -> wypo_id = item.id
 
     form = NoweWypozyczenieForm()
 
@@ -116,11 +118,24 @@ def edytuj_wypozyczenie(request, pk):
         form = EdytujWypozyczenieForm(request.POST, instance=item)
 
         if form.is_valid():
-            TAK = get_object_or_404(BOOL, pk=1)
-            NIE = get_object_or_404(BOOL, pk=2)
             editedItem = form.save(commit=False)
             if editedItem.zaplacone == TAK:
                 pakiet = Pakiet.objects.filter(wypozyczenie=item.id)
+
+                dzis = datetime.date.today()
+
+                if dzis > editedItem.do:
+                    utarg =get_object_or_404(Utarg, data=dzis)
+                    utarg.kwota = utarg.kwota + 10
+                    utarg.save()
+
+                #roz = int(dzis - editedItem.do)
+                # if roz >0:
+                #     utarg = get_object_or_404(Utarg, data=dzis)
+                #     for i in range(roz-1):
+                #         utarg.kwota = utarg.kwota + 10
+
+
 
                 for x in pakiet:
                     sprzet_id = x.sprzet.id
@@ -180,22 +195,26 @@ def edytuj_klient(request, pk):
 
 @login_required()
 @transaction.atomic()
-def nowyPakiet(request):#, pk):
+def nowyPakiet(request):
     if request.method == 'POST':
         form = NowyPakietForm(request.POST)
 
         if form.is_valid():
             item = form.save(commit=False)
             klucz = item.wypozyczenie.id
-            #sprzet = item.sprzet
             sprzet_id = item.sprzet.id
-
-            TAK = get_object_or_404(BOOL, pk=1)
-            NIE = get_object_or_404(BOOL, pk=2)
             sprzet = get_object_or_404(Sprzet, pk=sprzet_id)
 
+            data = datetime.date.today()
+            utarg = Utarg.objects.all()
+
             if sprzet.wypozyczone == NIE:
-                #item.wypozyczenie = get_object_or_404(Wypozyczenie, pk=pk)
+                for x in utarg:
+                    if x.data == data:
+                        utarg = x
+                        utarg.kwota = utarg.kwota + sprzet.cena
+                        utarg.save()
+
                 sprzet.wypozyczone = TAK
 
                 item.save()

@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
-from item.models import Klient, Pracownik, Sprzet, Wypozyczenie, Utarg, Pakiet
+from item.models import Klient, Sprzet, Wypozyczenie, Utarg, Pakiet, BOOL
 
 from .forms import SignupForm
 from django.contrib.auth import logout
@@ -13,7 +13,7 @@ def index(request):
 def sprzet(request):
     items = Sprzet.objects.all()
     return render(request, 'core/sprzet.html',{
-        'items':items,
+        'items': items,
     })
 
 @login_required()
@@ -25,9 +25,14 @@ def klient(request):
 
 @login_required()
 def wypozyczenie(request):
-    items = Wypozyczenie.objects.all()
+    TAK = get_object_or_404(BOOL, pk=1)
+    NIE = get_object_or_404(BOOL, pk=2)
+
+    items = Wypozyczenie.objects.all().filter(zaplacone=NIE)
+    oddane = Wypozyczenie.objects.all().filter(zaplacone=TAK)
     return render(request, 'core/wypozyczenie.html',{
-        'items':items
+        'items': items,
+        'oddane': oddane,
     })
 
 def kontakt(request):
@@ -47,6 +52,13 @@ def signup(request):
 
     return render(request, 'core/signup.html',{
         'form': form
+    })
+
+def utarg(request):
+    item = Utarg.objects.all()
+
+    return render(request, 'core/utarg.html',{
+        'item': item,
     })
 
 def logout_view(request):

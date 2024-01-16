@@ -97,20 +97,14 @@ class EdytujKlientForm(forms.ModelForm):
 class NoweWypozyczenieForm(forms.ModelForm):
     class Meta:
         model = Wypozyczenie
-        fields = ('klient', 'od', 'do', 'zaplacone',)
+        fields = ('klient', 'do',)
 
         widgets = {
             'klient': forms.Select(attrs={
                 'class': INPUT_CLASSES
             }),
-            'od': SelectDateWidget(attrs={
-                'class': 'w-1/6 py-2 px-2 rounded-xl border'
-            }),
             'do': SelectDateWidget(attrs={
                 'class': 'w-1/6 py-2 px-2 rounded-xl border'
-            }),
-            'zaplacone': forms.Select(attrs={
-                'class': INPUT_CLASSES
             }),
         }
 

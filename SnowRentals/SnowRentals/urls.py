@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from core.views import sprzet, klient, wypozyczenie
+from core.views import sprzet, klient, wypozyczenie, utarg
 
 urlpatterns = [
     path('', include('core.urls')),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('sprzet/', sprzet, name='sprzet'),
     path('klient/', klient, name='klient'),
     path('wypozyczenie/', wypozyczenie, name='wypozyczenie'),
+    path('utarg/', utarg, name='utarg'),
     path('admin/', admin.site.urls),
 ]

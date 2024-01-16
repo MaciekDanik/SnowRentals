@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Utarg{% endblock %}
+
+{% block content %}
+   <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+        <h2 class="mb-12 text-2xl text-center"> Utarg</h2>
+
+            <div class="grid grid-cols-3 gap-3">
+                {% for items in item %}
+                <div>
+                        <div class="p-4 bg-white rounded-xl">
+                            <h2 class="text-xl">{{ items.data}}</h2>
+                            <p class="text-gray-500">Kwota: {{items.kwota}}</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+    </div>
+{% endblock %}

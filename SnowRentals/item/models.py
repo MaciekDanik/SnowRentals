@@ -73,28 +73,28 @@ class Klient(models.Model):
         return self.imie+" "+self.nazwisko
 
 class Utarg(models.Model):
-    data = models.DateTimeField("Utarg z dnia: ") #, auto_now_add=True
-    kwota = models.FloatField(validators=[wiekszeOdZera])
+    data = models.DateField("Utarg z dnia: ") #, auto_now_add=True
+    kwota = models.FloatField(validators=[wiekszeOdZera],default=0)
 
     class Meta:
         ordering=('data',)
         verbose_name_plural = 'Utarg'
 
-    # def __str__(self):
-    #     return "Utarg z: " + str(self.data)
+    def __str__(self):
+        return "Utarg: " + str(self.data)
 
 class Wypozyczenie(models.Model):
     pracownik = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     klient = models.ForeignKey(Klient, related_name='items', null=True, on_delete=models.SET_NULL)
-    od = models.DateTimeField("Wypozyczone: ") #, auto_now_add=True
-    do = models.DateTimeField("Zwrocone: ")
+    od = models.DateField("Wypozyczone: ") #, auto_now_add=True
+    do = models.DateField("Zwrocone: ")
     zaplacone = models.ForeignKey(BOOL, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name_plural = 'Wypożyczenia'
 
     def __str__(self):
-        return str(self.klient)+" "+str(self.od)
+        return str(self.klient)+" "+str(self.od)+" "+str(self.zaplacone)
 
 
 class Kategoria(models.Model):
@@ -131,7 +131,7 @@ class Sprzet(models.Model):
         verbose_name_plural = 'Lista sprzętu'
 
     def __str__(self):
-        return str(self.rodzaj) + " " + str(self.dlugosc)
+        return str(self.rodzaj) + " " + str(self.dlugosc) + " " + str(self.wypozyczone)
 
 
 class Pakiet(models.Model):
